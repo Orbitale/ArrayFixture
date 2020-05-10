@@ -1,0 +1,36 @@
+{
+    "name": "orbitale/array-fixture",
+    "description": "A Doctrine Data Fixture service based on PHP arrays.",
+    "keywords": ["doctrine", "orm", "fixtures"],
+    "type": "library",
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://github.com/Orbitale/ArrayFixture",
+    "authors": [
+        {
+            "name": "Alex Rock",
+            "email": "alex@orbitale.io",
+            "homepage": "http://www.orbitale.io/"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "doctrine/orm": "^2.7",
+        "doctrine/data-fixtures": "^1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.1"
+    },
+    "suggest": {
+        "doctrine/doctrine-fixtures-bundle": "To use with ORMFixtureInterface and register fixtures automatically in the Dependency Injection container."
+    },
+    "autoload": {
+        "psr-4": {
+            "Orbitale\\Component\\ArrayFixture\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Orbitale\\Component\\ArrayFixture\\" : "tests/"
+        }
+    }
+}

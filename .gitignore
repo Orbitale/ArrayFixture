@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+/build/
+/vendor/
+
+/.php_cs.cache
+/composer.lock
+/composer.phar
+/phpunit.xml
