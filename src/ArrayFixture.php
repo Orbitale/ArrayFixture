@@ -20,7 +20,9 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
+use Generator;
 use InvalidArgumentException;
 use function method_exists;
 use function property_exists;
@@ -98,7 +100,7 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
     /**
      * Returns an iterable containing the list of objects that should be persisted.
      *
-     * @return object[]
+     * @return array[]|Generator
      */
     abstract protected function getObjects(): iterable;
 
@@ -160,6 +162,8 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
     /**
      * Creates a new instance of the class associated with the fixture.
      * Override this method if you have constructor arguments to manage yourself depending on input data.
+     *
+     * @param mixed[] $data
      */
     protected function createNewInstance(array $data): object
     {
@@ -182,6 +186,8 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
 
     /**
      * Creates the object and persist it in database.
+     *
+     * @param mixed[] $data
      */
     private function fixtureObject(array $data): void
     {
@@ -193,6 +199,7 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
         // /!\ Be careful, this will override the generator type for ALL objects of the same entity class!
         //     This means that it _may_ break objects for which ids are not provided in the fixtures.
         // The solution for the user: don't specify any ID, or specify ALL of them.
+        /** @var ClassMetadata $metadata */
         $metadata = $this->manager->getClassMetadata($this->getEntityClass());
         $primaryKey = $metadata->getIdentifierFieldNames();
         if (1 === count($primaryKey) && isset($data[$primaryKey[0]])) {

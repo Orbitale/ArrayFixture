@@ -18,6 +18,7 @@ use OutOfBoundsException;
 
 class ReferenceRepositoryStub extends ReferenceRepository
 {
+    /** @var array<object> */
     private array $references = [];
 
     public function addReference($name, $object): void
@@ -25,12 +26,12 @@ class ReferenceRepositoryStub extends ReferenceRepository
         $this->references[$name] = $object;
     }
 
-    public function hasReference($name)
+    public function hasReference($name): bool
     {
         return isset($this->references[$name]);
     }
 
-    public function getReference($name)
+    public function getReference($name): object
     {
         if (!$this->hasReference($name)) {
             throw new OutOfBoundsException(\sprintf('Reference to "%s" does not exist', $name));
@@ -39,7 +40,8 @@ class ReferenceRepositoryStub extends ReferenceRepository
         return $this->references[$name];
     }
 
-    public function getReferences()
+    /** @return array<object> */
+    public function getReferences(): array
     {
         return $this->references;
     }

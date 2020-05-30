@@ -16,6 +16,8 @@ namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 class PostStub
 {
     protected string $title;
+
+    /** @var array<string> */
     private array $tags = [];
     private ?self $parent;
 
@@ -24,6 +26,7 @@ class PostStub
         return $this->title;
     }
 
+    /** @return array<string> */
     public function getTags(): array
     {
         return $this->tags;
