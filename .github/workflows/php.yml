@@ -6,12 +6,19 @@ jobs:
     build-test:
         runs-on: ubuntu-latest
 
+        strategy:
+            matrix:
+                php-version:
+                    - 7.2
+                    - 7.3
+                    - 7.4
+
         steps:
             - uses: actions/checkout@v1
 
             - uses: shivammathur/setup-php@1.7.2
               with:
-                  php-version: '7.4'
+                  php-version: "${{ matrix.php-version }}"
                   extensions: gd, zip
 
             - run: composer validate
