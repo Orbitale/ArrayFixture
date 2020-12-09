@@ -18,9 +18,14 @@ use Doctrine\Persistence\ObjectManager;
 
 class EntityManagerStub implements ObjectManager
 {
-    private ClassMetadata $metadata;
-    private array $persisted = [];
-    private int $flushed = 0;
+    /** @var ClassMetadata */
+    private $metadata;
+
+    /** @var array */
+    private $persisted = [];
+
+    /** @var int */
+    private $flushed = 0;
 
     public function __construct(ClassMetadata $metadata)
     {

@@ -36,19 +36,19 @@ use function sprintf;
 abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtureInterface
 {
     /** @var ObjectManager */
-    private ObjectManager $manager;
+    private $manager;
 
     /** @var int */
-    private int $numberOfIteratedObjects = 0;
+    private $numberOfIteratedObjects = 0;
 
     /** @var bool */
-    private bool $clearEMOnFlush;
+    private $clearEMOnFlush;
 
     /** @var null|Closure */
-    private ?Closure $setter = null;
+    private $setter;
 
     /** @var null|Instantiator */
-    private static ?Instantiator $instantiator = null;
+    private static $instantiator = null;
 
     public function __construct()
     {

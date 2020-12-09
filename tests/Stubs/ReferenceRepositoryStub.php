@@ -19,7 +19,7 @@ use OutOfBoundsException;
 class ReferenceRepositoryStub extends ReferenceRepository
 {
     /** @var array<object> */
-    private array $references = [];
+    private $references = [];
 
     public function addReference($name, $object): void
     {
