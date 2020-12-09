@@ -94,14 +94,7 @@ Sometimes, an entity depends on another to be populated.
 
 With this Fixture class, it becomes much simpler since a few methods can be overriden in order to simplify the understanding on how our entities are persisted.
 
-This fixture class leverages the behavior of Doctrine's `OrderedFixtureInterface` interface to specify each fixture **priority order**.
-
-Let's take an example where a `Post` entity needs a `Tag` one.
-
-There are a few steps:
-
-* Create `TagFixtures` with low priority, no need to specify the order here since the default is `0` already, so it'll be the first one executed.
-* Create `PostFixtures` with higher priority (anything above `0`), so it's executed after `TagFixtures`
+**ℹ Note:** For this, you must determine in which order these fixtures must be executed, by implementing either the `Doctrine\Common\DataFixtures\OrderedFixtureInterface` or `Doctrine\Common\DataFixtures\DependentFixtureInterface` interfaces (but not both!).
 
 See the examples:
 
@@ -271,8 +264,6 @@ Note that this feature is not yet compatible with composite primary keys (yet, f
 
 The `ArrayFixture` class contains several `protected` methods you can override for your needs:
 
-* `getOrder()` (default `0`)<br>
-  Used to change the order in which the fixtures will be loaded.
 * `getReferencePrefix()` (default `null`)<br>
   Used to make the Fixture class call `$this->addReference()` after each entity is persisted.<br>
   References are stored as `{referencePrefix}-{id|__toString()|specific method name}`.
