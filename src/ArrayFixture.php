@@ -13,9 +13,13 @@ declare(strict_types=1);
 
 namespace Orbitale\Component\ArrayFixture;
 
-use Closure;
 use function count;
+use function method_exists;
+use function property_exists;
+use function sprintf;
+use Closure;
 use Doctrine\Common\DataFixtures\AbstractFixture as BaseAbstractFixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,16 +28,14 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use Generator;
 use InvalidArgumentException;
-use function method_exists;
-use function property_exists;
+use ReflectionMethod;
 use RuntimeException;
-use function sprintf;
 
 /**
  * When used alongside with Doctrine FixturesBundle,
  * you may need to implement the ORMFixtureInterface interface too.
  */
-abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtureInterface
+abstract class ArrayFixture extends BaseAbstractFixture
 {
     /** @var ObjectManager */
     private $manager;
@@ -48,11 +50,23 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
     private $setter;
 
     /** @var null|Instantiator */
-    private static $instantiator = null;
+    private static $instantiator;
 
     public function __construct()
     {
         $this->clearEMOnFlush = $this->clearEntityManagerOnFlush();
+
+        if (!($this instanceof OrderedFixtureInterface) && (new ReflectionMethod($this, 'getOrder'))->getDeclaringClass()->getName() !== self::class) {
+            @trigger_error(\sprintf(
+                "The \"%s\" method is overridden on the \"%s\" class, but it does not implement the \"%s\" interface.\n".
+                'ArrayFixture stopped implementing this interface in v1.1.0 to ensure compatibility with the "%s" interface.'.
+                'If you want ordered fixtures, you should implement either of these interfaces manually in your code.',
+                'getOrder',
+                static::class,
+                OrderedFixtureInterface::class,
+                DependentFixtureInterface::class
+            ), E_USER_DEPRECATED);
+        }
     }
 
     /**
@@ -83,12 +97,18 @@ abstract class ArrayFixture extends BaseAbstractFixture implements OrderedFixtur
     }
 
     /**
-     * Get the order of this fixture.
-     * Default null means 0, so the fixture will be run at the beginning in order of appearance.
-     * Is to be overriden if used.
+     * @deprecated
      */
     public function getOrder(): int
     {
+        @trigger_error(\sprintf(
+            "The \"%s\" method is deprecated since v1.1.0 and will be removed in v2.0, as the \"%s\" interface conflicts with \"%s\".\n".
+            'You should implement it in your own class instead',
+            __METHOD__,
+            OrderedFixtureInterface::class,
+            DependentFixtureInterface::class
+        ), E_USER_DEPRECATED);
+
         return 0;
     }
 
