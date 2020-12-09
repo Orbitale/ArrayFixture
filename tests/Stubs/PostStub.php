@@ -15,11 +15,14 @@ namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
 class PostStub
 {
-    protected string $title;
+    /** @var string */
+    protected $title;
 
     /** @var array<string> */
-    private array $tags = [];
-    private ?self $parent;
+    private $tags = [];
+
+    /** @var null|PostStub */
+    private $parent;
 
     public function getTitle(): string
     {
