@@ -1,3 +1,7 @@
+# v1.1.1
+
+* Widen `doctrine/persistence` version dependency.
+
 # v1.1.0
 
 * Removed `OrderedFixtureInterface` implementation, because it conflicts with `DependentFixtureInterface`.
