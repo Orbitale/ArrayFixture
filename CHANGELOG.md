@@ -1,3 +1,7 @@
+# v1.2.0
+
+* Change license from AGPL-3.0 to LGPL-2.1
+
 # v1.1.1
 
 * Widen `doctrine/persistence` version dependency.
