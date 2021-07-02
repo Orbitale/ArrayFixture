@@ -1,3 +1,9 @@
+# v1.3.0
+
+* Remove php 7.2 support
+* Update wrongly license after latest release (I updated the LICENSE file but forgot to update it in Composer, bly me).
+* Refresh & clean the test suite with latest PHPUnit version
+
 # v1.2.0
 
 * Change license from AGPL-3.0 to LGPL-2.1
