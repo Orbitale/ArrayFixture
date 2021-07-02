@@ -15,8 +15,10 @@ namespace Tests\Orbitale\Component\ArrayFixture\Fixtures;
 
 use Orbitale\Component\ArrayFixture\ArrayFixture;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\PostStub;
-use Tests\Orbitale\Component\ArrayFixture\Stubs\StringablePostStub;
 
+/**
+ * @extends ArrayFixture<PostStub>
+ */
 class CustomNumberOfFlushesFixtureStub extends ArrayFixture
 {
     protected function getEntityClass(): string

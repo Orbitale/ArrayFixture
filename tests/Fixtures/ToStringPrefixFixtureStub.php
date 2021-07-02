@@ -16,6 +16,9 @@ namespace Tests\Orbitale\Component\ArrayFixture\Fixtures;
 use Orbitale\Component\ArrayFixture\ArrayFixture;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\StringablePostStub;
 
+/**
+ * @extends ArrayFixture<StringablePostStub>
+ */
 class ToStringPrefixFixtureStub extends ArrayFixture
 {
     protected function getEntityClass(): string

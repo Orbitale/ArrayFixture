@@ -13,10 +13,6 @@ declare(strict_types=1);
 
 namespace Orbitale\Component\ArrayFixture;
 
-use function count;
-use function method_exists;
-use function property_exists;
-use function sprintf;
 use Closure;
 use Doctrine\Common\DataFixtures\AbstractFixture as BaseAbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -26,6 +22,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
+use const E_USER_DEPRECATED;
 use Generator;
 use InvalidArgumentException;
 use ReflectionMethod;
@@ -34,6 +31,8 @@ use RuntimeException;
 /**
  * When used alongside with Doctrine FixturesBundle,
  * you may need to implement the ORMFixtureInterface interface too.
+ *
+ * @template T
  */
 abstract class ArrayFixture extends BaseAbstractFixture
 {
@@ -56,8 +55,11 @@ abstract class ArrayFixture extends BaseAbstractFixture
     {
         $this->clearEMOnFlush = $this->clearEntityManagerOnFlush();
 
-        if (!($this instanceof OrderedFixtureInterface) && (new ReflectionMethod($this, 'getOrder'))->getDeclaringClass()->getName() !== self::class) {
-            @trigger_error(\sprintf(
+        if (
+            !($this instanceof OrderedFixtureInterface)
+            && self::class !== (new ReflectionMethod($this, 'getOrder'))->getDeclaringClass()->getName()
+        ) {
+            @\trigger_error(\sprintf(
                 "The \"%s\" method is overridden on the \"%s\" class, but it does not implement the \"%s\" interface.\n".
                 'ArrayFixture stopped implementing this interface in v1.1.0 to ensure compatibility with the "%s" interface.'.
                 'If you want ordered fixtures, you should implement either of these interfaces manually in your code.',
@@ -101,19 +103,24 @@ abstract class ArrayFixture extends BaseAbstractFixture
      */
     public function getOrder(): int
     {
-        @trigger_error(\sprintf(
-            "The \"%s\" method is deprecated since v1.1.0 and will be removed in v2.0, as the \"%s\" interface conflicts with \"%s\".\n".
+        @\trigger_error(
+            \sprintf(
+                "The \"%s\" method is deprecated since v1.1.0 and will be removed in v2.0, as the \"%s\" interface conflicts with \"%s\".\n".
             'You should implement it in your own class instead',
-            __METHOD__,
-            OrderedFixtureInterface::class,
-            DependentFixtureInterface::class
-        ), E_USER_DEPRECATED);
+                __METHOD__,
+                OrderedFixtureInterface::class,
+                DependentFixtureInterface::class
+            ),
+            E_USER_DEPRECATED
+        );
 
         return 0;
     }
 
     /**
      * Returns the class of the entity you're managing.
+     *
+     * @phpstan-return class-string<T>
      */
     abstract protected function getEntityClass(): string;
 
@@ -198,7 +205,9 @@ abstract class ArrayFixture extends BaseAbstractFixture
                 $value = $value($instance, $this, $this->manager);
             }
 
-            $setter->bindTo($instance, $entityClass)($key, $value);
+            /** @var callable $valueSetter */
+            $valueSetter = $setter->bindTo($instance, $entityClass);
+            $valueSetter($key, $value);
         }
 
         return $instance;
@@ -219,12 +228,12 @@ abstract class ArrayFixture extends BaseAbstractFixture
         // /!\ Be careful, this will override the generator type for ALL objects of the same entity class!
         //     This means that it _may_ break objects for which ids are not provided in the fixtures.
         // The solution for the user: don't specify any ID, or specify ALL of them.
-        /** @var ClassMetadata $metadata */
-        $metadata = $this->manager->getClassMetadata($this->getEntityClass());
+        $metadata = $this->manager->getClassMetadata($this->getEntityClass()); /* @phpstan-ignore-line */
+
         $primaryKey = $metadata->getIdentifierFieldNames();
-        if (1 === count($primaryKey) && isset($data[$primaryKey[0]])) {
-            $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE);
-            $metadata->setIdGenerator(new AssignedGenerator());
+        if (1 === \count($primaryKey) && isset($data[$primaryKey[0]])) {
+            $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE); /* @phpstan-ignore-line */
+            $metadata->setIdGenerator(new AssignedGenerator()); /* @phpstan-ignore-line */
         }
 
         $this->manager->persist($obj);
@@ -245,15 +254,15 @@ abstract class ArrayFixture extends BaseAbstractFixture
 
             $reference = null;
 
-            if (method_exists($obj, $methodName)) {
+            if (\method_exists($obj, $methodName)) {
                 $reference = $obj->{$methodName}();
-            } elseif (method_exists($obj, '__toString')) {
+            } elseif (\method_exists($obj, '__toString')) {
                 $reference = (string) $obj;
             }
 
             if (!$reference) {
                 throw new RuntimeException(
-                    sprintf(
+                    \sprintf(
                         'If you want to specify a reference with prefix "%s", method "%s" or "%s" must exist in the class, or you can override the "%s" method and add your own.',
                         $prefix,
                         $methodName,
@@ -272,9 +281,9 @@ abstract class ArrayFixture extends BaseAbstractFixture
             $class = $this->getEntityClass();
 
             return $this->setter = function (string $property, $value) use ($class): void {
-                if (!property_exists($this, $property)) {
+                if (!\property_exists($this, $property)) {
                     throw new InvalidArgumentException(
-                        sprintf(
+                        \sprintf(
                             'Cannot set property "%s" to "%s" object since this property does not exist.',
                             $property,
                             $class
