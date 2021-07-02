@@ -3,7 +3,7 @@
     "description": "A Doctrine Data Fixture service based on PHP arrays.",
     "keywords": ["doctrine", "orm", "fixtures"],
     "type": "library",
-    "license": "AGPL-3.0-or-later",
+    "license": "LGPL-2.1-or-later",
     "homepage": "https://github.com/Orbitale/ArrayFixture",
     "authors": [
         {
