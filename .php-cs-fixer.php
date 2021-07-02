@@ -33,7 +33,7 @@ $finder = PhpCsFixer\Finder::create()
     ])
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRules([
         'header_comment' => [
             'header' => $header,
@@ -43,7 +43,6 @@ return PhpCsFixer\Config::create()
         '@Symfony:risky' => true,
         '@PhpCsFixer' => true,
         '@PhpCsFixer:risky' => true,
-        '@PHP56Migration' => true,
         '@PHP70Migration' => true,
         '@PHP70Migration:risky' => true,
         '@PHP71Migration' => true,
@@ -55,9 +54,17 @@ return PhpCsFixer\Config::create()
         'no_php4_constructor' => true, // These are deprecated, so...
         'simplified_null_return' => true, // Removes useless code.
         'global_namespace_import' => true, // Add a "use" statement for everything in the global namespace.
+        'native_constant_invocation' => [
+            'include' => ['@all'],
+            'scope' => 'namespaced',
+        ],
+        'native_function_invocation' => [
+            'include' => ['@all'],
+            'scope' => 'namespaced',
+        ],
 
         // Some overrides of existing sets
-        'native_function_invocation' => false,
+        'yoda_style' => false,
         'mb_str_functions' => false, // mbstring can be much slower than native str functions.
         'increment_style' => false, // It's quite pointless and reduces readability. Unless executed billions of times in one row.
         'non_printable_character' => false, // Sometimes they're really useful. And it allows writing non-breakable spaces in test names!
