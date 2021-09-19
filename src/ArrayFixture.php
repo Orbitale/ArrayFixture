@@ -18,9 +18,10 @@ use Doctrine\Common\DataFixtures\AbstractFixture as BaseAbstractFixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Instantiator\Instantiator;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Id\AutoGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use const E_USER_DEPRECATED;
 use Generator;
@@ -233,7 +234,11 @@ abstract class ArrayFixture extends BaseAbstractFixture
         $primaryKey = $metadata->getIdentifierFieldNames();
         if (1 === \count($primaryKey) && isset($data[$primaryKey[0]])) {
             $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE); /* @phpstan-ignore-line */
-            $metadata->setIdGenerator(new AssignedGenerator()); /* @phpstan-ignore-line */
+            if ($this->manager instanceof EntityManagerInterface) {
+                $metadata->setIdGenerator(new AssignedGenerator()); /* @phpstan-ignore-line */
+            } elseif ($this->manager instanceof DocumentManager) {
+                $metadata->setIdGenerator(new AutoGenerator()); /* @phpstan-ignore-line */
+            }
         }
 
         $this->manager->persist($obj);

@@ -15,6 +15,9 @@ namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
 class PostStub
 {
+    /** @var int */
+    protected $id;
+
     /** @var string */
     protected $title;
 

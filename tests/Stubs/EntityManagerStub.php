@@ -13,87 +13,169 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 
-class EntityManagerStub implements ObjectManager
+class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
 {
-    /** @var ClassMetadata */
-    private $metadata;
-
-    /** @var array */
-    private $persisted = [];
-
-    /** @var int */
-    private $flushed = 0;
-
-    public function __construct(ClassMetadata $metadata)
-    {
-        $this->metadata = $metadata;
-    }
-
-    public function getPersisted(): array
-    {
-        return $this->persisted;
-    }
-
-    public function getFlushed(): int
-    {
-        return $this->flushed;
-    }
-
-    public function persist($object): void
-    {
-        $this->persisted[] = $object;
-    }
-
-    public function flush()
-    {
-        return $this->flushed++;
-    }
-
-    public function getClassMetadata($className)
-    {
-        return $this->metadata;
-    }
-
-    public function find($className, $id): void
+    public function getCache()
     {
     }
 
-    public function remove($object): void
+    public function getConnection(): Connection
     {
+        return new class([], $this->createDriver()) extends Connection {};
     }
 
-    public function merge($object): void
+    public function getExpressionBuilder()
     {
+        //
     }
 
-    public function clear($objectName = null): void
+    public function beginTransaction()
     {
+        //
     }
 
-    public function detach($object): void
+    public function transactional($func)
     {
+        //
     }
 
-    public function refresh($object): void
+    public function commit()
     {
+        //
     }
 
-    public function getRepository($className): void
+    public function rollback()
     {
+        //
     }
 
-    public function getMetadataFactory(): void
+    public function createQuery($dql = '')
     {
+        //
     }
 
-    public function initializeObject($obj): void
+    public function createNamedQuery($name)
     {
+        //
     }
 
-    public function contains($object): void
+    public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
+        //
+    }
+
+    public function createNamedNativeQuery($name)
+    {
+        //
+    }
+
+    public function createQueryBuilder()
+    {
+        //
+    }
+
+    public function getReference($entityName, $id)
+    {
+        //
+    }
+
+    public function getPartialReference($entityName, $identifier)
+    {
+        //
+    }
+
+    public function close()
+    {
+        //
+    }
+
+    public function copy($entity, $deep = false)
+    {
+        //
+    }
+
+    public function lock($entity, $lockMode, $lockVersion = null)
+    {
+        //
+    }
+
+    public function getEventManager()
+    {
+        //
+    }
+
+    public function getConfiguration()
+    {
+        //
+    }
+
+    public function isOpen()
+    {
+        //
+    }
+
+    public function getUnitOfWork()
+    {
+        //
+    }
+
+    public function getHydrator($hydrationMode)
+    {
+        //
+    }
+
+    public function newHydrator($hydrationMode)
+    {
+        //
+    }
+
+    public function getProxyFactory()
+    {
+        //
+    }
+
+    public function getFilters()
+    {
+        //
+    }
+
+    public function isFiltersStateClean()
+    {
+        //
+    }
+
+    public function hasFilters()
+    {
+        //
+    }
+
+    private function createDriver()
+    {
+        return new class implements Driver {
+            public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
+            {
+            }
+
+            public function getDatabasePlatform()
+            {
+            }
+
+            public function getSchemaManager(Connection $conn)
+            {
+            }
+
+            public function getName()
+            {
+            }
+
+            public function getDatabase(Connection $conn)
+            {
+            }
+        };
     }
 }

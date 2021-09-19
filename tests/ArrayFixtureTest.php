@@ -13,17 +13,24 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture;
 
-use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ODMClassMetadata;
+use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\CustomNumberOfFlushesFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\InexistentMethodPrefixFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\InexistentPropertyFixtureStub;
+use Tests\Orbitale\Component\ArrayFixture\Fixtures\ObjectsWithIdsStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\PostSelfReferenceFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\PostTitleFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\ToStringPrefixFixtureStub;
+use Tests\Orbitale\Component\ArrayFixture\Stubs\DocumentManagerStub;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\EntityManagerStub;
+use Tests\Orbitale\Component\ArrayFixture\Stubs\ObjectManagerStub;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\PostStub;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\ReferenceRepositoryStub;
 
@@ -31,7 +38,7 @@ class ArrayFixtureTest extends TestCase
 {
     public function test post title fixture(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
 
         (new PostTitleFixtureStub())->load($manager);
 
@@ -45,7 +52,7 @@ class ArrayFixtureTest extends TestCase
 
     public function test post self reference fixture(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
         $refs = new ReferenceRepositoryStub($manager);
 
         $fixture = new PostSelfReferenceFixtureStub();
@@ -65,7 +72,7 @@ class ArrayFixtureTest extends TestCase
 
     public function test inexistent property(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Cannot set property "does_not_exist" to "Tests\Orbitale\Component\ArrayFixture\Stubs\PostStub" object since this property does not exist.');
@@ -75,7 +82,7 @@ class ArrayFixtureTest extends TestCase
 
     public function test toString for prefix(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
         $refsRepo = new ReferenceRepositoryStub($manager);
 
         $fixture = new ToStringPrefixFixtureStub();
@@ -95,7 +102,7 @@ class ArrayFixtureTest extends TestCase
 
     public function test inexistent prefix method(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('If you want to specify a reference with prefix "post-", method "getInexistentField" or "__toString()" must exist in the class, or you can override the "getMethodNameForReference" method and add your own.');
@@ -105,7 +112,7 @@ class ArrayFixtureTest extends TestCase
 
     public function test custom number of flushes(): void
     {
-        $manager = $this->getEntityManager();
+        $manager = $this->getObjectManager();
 
         $fixture = new CustomNumberOfFlushesFixtureStub();
         $fixture->load($manager);
@@ -114,11 +121,49 @@ class ArrayFixtureTest extends TestCase
         static::assertCount(20, $manager->getPersisted());
     }
 
-    private function getEntityManager(): EntityManagerStub
+    public function test entities with ids(): void
     {
-        $metadata = $this->createMock(ClassMetadata::class);
+        $entityManager = $this->getEntityManager();
+
+        $fixture = new ObjectsWithIdsStub();
+        $fixture->load($entityManager);
+
+        static::assertSame(1, $entityManager->getFlushed());
+        static::assertCount(2, $entityManager->getPersisted());
+    }
+
+    public function test documents with ids(): void
+    {
+        $documentManager = $this->getDocumentManager();
+
+        $fixture = new ObjectsWithIdsStub();
+        $fixture->load($documentManager);
+
+        static::assertSame(1, $documentManager->getFlushed());
+        static::assertCount(2, $documentManager->getPersisted());
+    }
+
+    private function getObjectManager(): ObjectManagerStub
+    {
+        $metadata = $this->createMock(ClassMetadataInterface::class);
+        $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
+
+        return new ObjectManagerStub($metadata);
+    }
+
+    private function getEntityManager(): EntityManagerInterface
+    {
+        $metadata = $this->createMock(ORMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
         return new EntityManagerStub($metadata);
+    }
+
+    private function getDocumentManager(): DocumentManager
+    {
+        $metadata = $this->createMock(ODMClassMetadata::class);
+        $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
+
+        return new DocumentManagerStub($metadata);
     }
 }
