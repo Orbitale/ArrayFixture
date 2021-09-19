@@ -1,3 +1,7 @@
+# v1.3.1
+
+* Fix compatibility with Doctrine ODM
+
 # v1.3.0
 
 * Remove php 7.2 support
