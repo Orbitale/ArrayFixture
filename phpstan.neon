@@ -10,7 +10,6 @@ parameters:
 
     paths:
         - %currentWorkingDirectory%/src/
-        - %currentWorkingDirectory%/tests/
 
     ignoreErrors:
           # These actions are so complex that we sometimes need dirty hacks. That's life...

@@ -20,8 +20,10 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Id\AutoGenerator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ClassMetadataODM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataORM;
 use Doctrine\Persistence\ObjectManager;
 use const E_USER_DEPRECATED;
 use Generator;
@@ -33,7 +35,7 @@ use RuntimeException;
  * When used alongside with Doctrine FixturesBundle,
  * you may need to implement the ORMFixtureInterface interface too.
  *
- * @template T
+ * @template T of object
  */
 abstract class ArrayFixture extends BaseAbstractFixture
 {
@@ -195,7 +197,9 @@ abstract class ArrayFixture extends BaseAbstractFixture
      */
     protected function createNewInstance(array $data): object
     {
+        /** @var class-string<T> $entityClass */
         $entityClass = $this->getEntityClass();
+
         $instance = self::getInstantiator()->instantiate($entityClass);
 
         $setter = $this->getSetter();
@@ -229,15 +233,18 @@ abstract class ArrayFixture extends BaseAbstractFixture
         // /!\ Be careful, this will override the generator type for ALL objects of the same entity class!
         //     This means that it _may_ break objects for which ids are not provided in the fixtures.
         // The solution for the user: don't specify any ID, or specify ALL of them.
-        $metadata = $this->manager->getClassMetadata($this->getEntityClass()); /* @phpstan-ignore-line */
+        /** @var ClassMetadataORM<T>|ClassMetadataODM<T> $metadata */
+        $metadata = $this->manager->getClassMetadata($this->getEntityClass());
 
         $primaryKey = $metadata->getIdentifierFieldNames();
         if (1 === \count($primaryKey) && isset($data[$primaryKey[0]])) {
-            $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE); /* @phpstan-ignore-line */
+            $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE);
             if ($this->manager instanceof EntityManagerInterface) {
-                $metadata->setIdGenerator(new AssignedGenerator()); /* @phpstan-ignore-line */
+                assert($metadata instanceof ClassMetadataORM);
+                $metadata->setIdGenerator(new AssignedGenerator());
             } elseif ($this->manager instanceof DocumentManager) {
-                $metadata->setIdGenerator(new AutoGenerator()); /* @phpstan-ignore-line */
+                assert($metadata instanceof ClassMetadataODM);
+                $metadata->setIdGenerator(new AutoGenerator());
             }
         }
 

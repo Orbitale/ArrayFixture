@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture;
 
+use Doctrine\DBAL\Driver;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
@@ -156,7 +157,12 @@ class ArrayFixtureTest extends TestCase
         $metadata = $this->createMock(ORMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
-        return new EntityManagerStub($metadata);
+        $driver = $this->createMock(Driver::class);
+
+        $stub = new EntityManagerStub($metadata);
+        $stub->setDriver($driver);
+
+        return $stub;
     }
 
     private function getDocumentManager(): DocumentManager

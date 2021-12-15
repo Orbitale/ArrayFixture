@@ -20,13 +20,21 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
 {
+    /** @var Driver */
+    private $driver;
+
+    public function setDriver(Driver $driver)
+    {
+        $this->driver = $driver;
+    }
+
     public function getCache()
     {
     }
 
     public function getConnection(): Connection
     {
-        return new class([], $this->createDriver()) extends Connection {};
+        return new class([], $this->driver) extends Connection {};
     }
 
     public function getExpressionBuilder()
@@ -152,30 +160,5 @@ class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterf
     public function hasFilters()
     {
         //
-    }
-
-    private function createDriver()
-    {
-        return new class implements Driver {
-            public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
-            {
-            }
-
-            public function getDatabasePlatform()
-            {
-            }
-
-            public function getSchemaManager(Connection $conn)
-            {
-            }
-
-            public function getName()
-            {
-            }
-
-            public function getDatabase(Connection $conn)
-            {
-            }
-        };
     }
 }
