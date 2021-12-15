@@ -80,7 +80,7 @@ class PostFixtures extends ArrayFixture implements ORMFixtureInterface
 Let's explain:
 
 * We are extending the `ArrayFixture` class from this package
-* We implemented `ORMFixtureInterface` to allow Symfony to autoconfigure this fixture as a service. This is **mandatory when using Symfony and the DoctrineBundle**.
+* You must implement `ORMFixtureInterface` yourself to allow Symfony to autoconfigure this fixture as a service. This is **mandatory when using Symfony and the DoctrineBundle**.
 * The `getEntityClass()` method needs to know which Entity will be managed by this Fixture class.
 * The `getObjects()` method must return an `iterable`, so it could either be an `array` or a `Generator`, since the fixture will only loop on it.<br>
   Every array in `getObjects()` will be hydrated in an instance of the Entity class, **without the need for setters**. Bye anemic entities!<br>
