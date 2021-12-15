@@ -1,3 +1,10 @@
+# v1.3.2
+
+* Test the package on PHP 8.1
+* Fix phpstan issues
+* Migrate to phpstan 1.0
+* Fix PHPUnit's XSD path and use local one
+
 # v1.3.1
 
 * Fix compatibility with Doctrine ODM
