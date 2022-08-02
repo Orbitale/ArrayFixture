@@ -1,3 +1,7 @@
+# v1.3.3
+
+* Allow using doctrine/persistence ^3.0
+
 # v1.3.2
 
 * Test the package on PHP 8.1
