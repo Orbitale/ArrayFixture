@@ -28,11 +28,11 @@ class PostFixtures extends Fixture
 {
     public function load(ObjectManager $manager)
     {
-        $product = new Post();
-        $product->setTitle('First post');
-        $product->setDescription('Lorem ipsum');
+        $post = new Post();
+        $post->setTitle('First post');
+        $post->setDescription('Lorem ipsum');
 
-        $manager->persist($product);
+        $manager->persist($post);
         $manager->flush();
     }
 }
