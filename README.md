@@ -282,8 +282,4 @@ The `ArrayFixture` class contains several `protected` methods you can override f
 
 ## License and Copyright
 
-This project is licensed under AGPL-3.0. This license implies that if you modify this project, you must share those modifications by making them open-source too. However, the AGPL-3.0 license applies only on this project.
-
-If you don't want to follow this rule or do not want to use AGPL-3.0 licensed software, you must buy commercial licenses.
-
-Contact us for more information.
+This project is licensed under LGPL-2.1. Check the [LICENSE](./LICENSE) file for more details.
