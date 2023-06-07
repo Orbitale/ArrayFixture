@@ -23,12 +23,12 @@ class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterf
     /** @var Driver */
     private $driver;
 
-    public function setDriver(Driver $driver)
+    public function setDriver(Driver $driver): void
     {
         $this->driver = $driver;
     }
 
-    public function getCache()
+    public function getCache(): void
     {
     }
 
@@ -37,128 +37,103 @@ class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterf
         return new class([], $this->driver) extends Connection {};
     }
 
-    public function getExpressionBuilder()
+    public function getExpressionBuilder(): void
     {
-        //
     }
 
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
-        //
     }
 
-    public function transactional($func)
+    public function transactional($func): void
     {
-        //
     }
 
-    public function commit()
+    public function commit(): void
     {
-        //
     }
 
-    public function rollback()
+    public function rollback(): void
     {
-        //
     }
 
-    public function createQuery($dql = '')
+    public function createQuery($dql = ''): void
     {
-        //
     }
 
-    public function createNamedQuery($name)
+    public function createNamedQuery($name): void
     {
-        //
     }
 
-    public function createNativeQuery($sql, ResultSetMapping $rsm)
+    public function createNativeQuery($sql, ResultSetMapping $rsm): void
     {
-        //
     }
 
-    public function createNamedNativeQuery($name)
+    public function createNamedNativeQuery($name): void
     {
-        //
     }
 
-    public function createQueryBuilder()
+    public function createQueryBuilder(): void
     {
-        //
     }
 
-    public function getReference($entityName, $id)
+    public function getReference($entityName, $id): void
     {
-        //
     }
 
-    public function getPartialReference($entityName, $identifier)
+    public function getPartialReference($entityName, $identifier): void
     {
-        //
     }
 
-    public function close()
+    public function close(): void
     {
-        //
     }
 
-    public function copy($entity, $deep = false)
+    public function copy($entity, $deep = false): void
     {
-        //
     }
 
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock($entity, $lockMode, $lockVersion = null): void
     {
-        //
     }
 
-    public function getEventManager()
+    public function getEventManager(): void
     {
-        //
     }
 
-    public function getConfiguration()
+    public function getConfiguration(): void
     {
-        //
     }
 
-    public function isOpen()
+    public function isOpen(): void
     {
-        //
     }
 
-    public function getUnitOfWork()
+    public function getUnitOfWork(): void
     {
-        //
     }
 
-    public function getHydrator($hydrationMode)
+    public function getHydrator($hydrationMode): void
     {
-        //
     }
 
-    public function newHydrator($hydrationMode)
+    public function newHydrator($hydrationMode): void
     {
-        //
     }
 
-    public function getProxyFactory()
+    public function getProxyFactory(): void
     {
-        //
     }
 
-    public function getFilters()
+    public function getFilters(): void
     {
-        //
     }
 
-    public function isFiltersStateClean()
+    public function isFiltersStateClean(): void
     {
-        //
     }
 
-    public function hasFilters()
+    public function hasFilters(): void
     {
-        //
     }
 }

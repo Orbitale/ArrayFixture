@@ -58,8 +58,7 @@ class DocumentManagerStub extends DocumentManager
         return $this->flushed++;
     }
 
-    public function clear($documentName = null)
+    public function clear($documentName = null): void
     {
-        //
     }
 }

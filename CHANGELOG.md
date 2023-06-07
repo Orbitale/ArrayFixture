@@ -1,3 +1,8 @@
+# v1.3.4
+
+* Allow using doctrine/instantiator ^2.0
+* Fix a test with latest DataFixtures versions
+
 # v1.3.3
 
 * Allow using doctrine/persistence ^3.0

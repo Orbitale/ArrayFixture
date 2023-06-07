@@ -25,11 +25,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata as ClassMetadataORM;
 use Doctrine\Persistence\ObjectManager;
-use const E_USER_DEPRECATED;
 use Generator;
 use InvalidArgumentException;
 use ReflectionMethod;
 use RuntimeException;
+
+use const E_USER_DEPRECATED;
 
 /**
  * When used alongside with Doctrine FixturesBundle,
@@ -74,9 +75,6 @@ abstract class ArrayFixture extends BaseAbstractFixture
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function load(ObjectManager $manager): void
     {
         $this->manager = $manager;
@@ -233,17 +231,17 @@ abstract class ArrayFixture extends BaseAbstractFixture
         // /!\ Be careful, this will override the generator type for ALL objects of the same entity class!
         //     This means that it _may_ break objects for which ids are not provided in the fixtures.
         // The solution for the user: don't specify any ID, or specify ALL of them.
-        /** @var ClassMetadataORM<T>|ClassMetadataODM<T> $metadata */
+        /** @var ClassMetadataODM<T>|ClassMetadataORM<T> $metadata */
         $metadata = $this->manager->getClassMetadata($this->getEntityClass());
 
         $primaryKey = $metadata->getIdentifierFieldNames();
         if (1 === \count($primaryKey) && isset($data[$primaryKey[0]])) {
             $metadata->setIdGeneratorType($metadata::GENERATOR_TYPE_NONE);
             if ($this->manager instanceof EntityManagerInterface) {
-                assert($metadata instanceof ClassMetadataORM);
+                \assert($metadata instanceof ClassMetadataORM);
                 $metadata->setIdGenerator(new AssignedGenerator());
             } elseif ($this->manager instanceof DocumentManager) {
-                assert($metadata instanceof ClassMetadataODM);
+                \assert($metadata instanceof ClassMetadataODM);
                 $metadata->setIdGenerator(new AutoGenerator());
             }
         }

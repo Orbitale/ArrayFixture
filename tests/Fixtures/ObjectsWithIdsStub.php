@@ -32,6 +32,7 @@ class ObjectsWithIdsStub extends ArrayFixture
             'id' => 1,
             'title' => 'Default title',
         ];
+
         yield [
             'id' => 2,
             'title' => 'Another title',

@@ -21,23 +21,31 @@ class ReferenceRepositoryStub extends ReferenceRepository
     /** @var array<object> */
     private $references = [];
 
+    /** @var array<string, array<string, object>> */
+    private $referencesByClass = [];
+
     public function addReference($name, $object): void
     {
         $this->references[$name] = $object;
+        $this->referencesByClass[\get_class($object)][$name] = $object;
     }
 
-    public function hasReference($name): bool
+    public function hasReference($name, ?string $class = null): bool
     {
-        return isset($this->references[$name]);
+        return $class === null
+            ? isset($this->references[$name]) // For BC, to be removed in next major.
+            : isset($this->referencesByClass[$class][$name]);
     }
 
-    public function getReference($name): object
+    public function getReference($name, ?string $class = null): object
     {
-        if (!$this->hasReference($name)) {
+        if (!$this->hasReference($name, $class)) {
             throw new OutOfBoundsException(\sprintf('Reference to "%s" does not exist', $name));
         }
 
-        return $this->references[$name];
+        return $class === null
+            ? $this->references[$name] // For BC, to be removed in next major.
+            : $this->referencesByClass[$class][$name];
     }
 
     /** @return array<object> */

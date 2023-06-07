@@ -42,6 +42,7 @@ class PostSelfReferenceFixtureStub extends ArrayFixture
             'title' => 'Default title',
             'parent' => null,
         ];
+
         yield [
             'title' => 'Second title',
             'parent' => function (PostStub $o, self $fixture) {

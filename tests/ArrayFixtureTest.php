@@ -15,9 +15,9 @@ namespace Tests\Orbitale\Component\ArrayFixture;
 
 use Doctrine\DBAL\Driver;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ODMClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
-use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ODMClassMetadata;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -43,12 +43,12 @@ class ArrayFixtureTest extends TestCase
 
         (new PostTitleFixtureStub())->load($manager);
 
-        static::assertSame(1, $manager->getFlushed());
+        self::assertSame(1, $manager->getFlushed());
 
         $entities = $manager->getPersisted();
-        static::assertCount(1, $entities);
-        static::assertInstanceOf(PostStub::class, $entities[0]);
-        static::assertSame('Default title', $entities[0]->getTitle());
+        self::assertCount(1, $entities);
+        self::assertInstanceOf(PostStub::class, $entities[0]);
+        self::assertSame('Default title', $entities[0]->getTitle());
     }
 
     public function test post self reference fixture(): void
@@ -60,15 +60,15 @@ class ArrayFixtureTest extends TestCase
         $fixture->setReferenceRepository($refs);
         $fixture->load($manager);
 
-        static::assertSame(1, $manager->getFlushed());
+        self::assertSame(1, $manager->getFlushed());
 
         $entities = $manager->getPersisted();
-        static::assertCount(2, $entities);
-        static::assertInstanceOf(PostStub::class, $entities[0]);
-        static::assertInstanceOf(PostStub::class, $entities[1]);
-        static::assertSame('Default title', $entities[0]->getTitle());
-        static::assertSame('Second title', $entities[1]->getTitle());
-        static::assertSame($entities[0], $entities[1]->getParent());
+        self::assertCount(2, $entities);
+        self::assertInstanceOf(PostStub::class, $entities[0]);
+        self::assertInstanceOf(PostStub::class, $entities[1]);
+        self::assertSame('Default title', $entities[0]->getTitle());
+        self::assertSame('Second title', $entities[1]->getTitle());
+        self::assertSame($entities[0], $entities[1]->getParent());
     }
 
     public function test inexistent property(): void
@@ -90,15 +90,15 @@ class ArrayFixtureTest extends TestCase
         $fixture->setReferenceRepository($refsRepo);
         $fixture->load($manager);
 
-        static::assertSame(1, $manager->getFlushed());
+        self::assertSame(1, $manager->getFlushed());
 
         $entities = $manager->getPersisted();
-        static::assertCount(1, $entities);
-        static::assertInstanceOf(PostStub::class, $entities[0]);
-        static::assertSame('Default title', $entities[0]->getTitle());
+        self::assertCount(1, $entities);
+        self::assertInstanceOf(PostStub::class, $entities[0]);
+        self::assertSame('Default title', $entities[0]->getTitle());
         $refs = $refsRepo->getReferences();
-        static::assertArrayHasKey('post-Default title', $refs);
-        static::assertSame($refs['post-Default title'], $entities[0]);
+        self::assertArrayHasKey('post-Default title', $refs);
+        self::assertSame($refs['post-Default title'], $entities[0]);
     }
 
     public function test inexistent prefix method(): void
@@ -118,8 +118,8 @@ class ArrayFixtureTest extends TestCase
         $fixture = new CustomNumberOfFlushesFixtureStub();
         $fixture->load($manager);
 
-        static::assertSame(5, $manager->getFlushed());
-        static::assertCount(20, $manager->getPersisted());
+        self::assertSame(5, $manager->getFlushed());
+        self::assertCount(20, $manager->getPersisted());
     }
 
     public function test entities with ids(): void
@@ -129,8 +129,8 @@ class ArrayFixtureTest extends TestCase
         $fixture = new ObjectsWithIdsStub();
         $fixture->load($entityManager);
 
-        static::assertSame(1, $entityManager->getFlushed());
-        static::assertCount(2, $entityManager->getPersisted());
+        self::assertSame(1, $entityManager->getFlushed());
+        self::assertCount(2, $entityManager->getPersisted());
     }
 
     public function test documents with ids(): void
@@ -140,8 +140,8 @@ class ArrayFixtureTest extends TestCase
         $fixture = new ObjectsWithIdsStub();
         $fixture->load($documentManager);
 
-        static::assertSame(1, $documentManager->getFlushed());
-        static::assertCount(2, $documentManager->getPersisted());
+        self::assertSame(1, $documentManager->getFlushed());
+        self::assertCount(2, $documentManager->getPersisted());
     }
 
     private function getObjectManager(): ObjectManagerStub
