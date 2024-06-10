@@ -13,21 +13,10 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
-use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
-use Doctrine\ORM\Cache;
-use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
-use Doctrine\ORM\NativeQuery;
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\UnitOfWork;
 
 class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
 {

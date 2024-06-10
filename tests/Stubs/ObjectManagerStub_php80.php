@@ -52,7 +52,7 @@ class ObjectManagerStub implements ObjectManager
         return $this->flushed++;
     }
 
-    public function getClassMetadata(string $className): ClassMetadata
+    public function getClassMetadata($className): ClassMetadata
     {
         return $this->metadata;
     }
