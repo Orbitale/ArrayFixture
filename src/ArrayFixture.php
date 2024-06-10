@@ -79,8 +79,12 @@ abstract class ArrayFixture extends BaseAbstractFixture
     {
         $this->manager = $manager;
 
-        if ($this->manager instanceof EntityManagerInterface && $this->disableLogger()) {
-            $this->manager->getConnection()->getConfiguration()->setSQLLogger(null);
+        if (
+            $this->manager instanceof EntityManagerInterface
+            && $this->disableLogger()
+            && \method_exists($dbConfiguration = $this->manager->getConnection()->getConfiguration(), 'setSQLLogger')
+        ) {
+            $dbConfiguration->setSQLLogger(null);
         }
 
         $objects = $this->getObjects();

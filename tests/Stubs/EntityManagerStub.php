@@ -13,127 +13,271 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\NativeQuery;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\UnitOfWork;
 
-class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
-{
-    /** @var Driver */
-    private $driver;
-
-    public function setDriver(Driver $driver): void
+if (PHP_VERSION_ID < 80300) {
+    class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
     {
-        $this->driver = $driver;
+        /** @var Driver */
+        private $driver;
+
+        public function setDriver(Driver $driver): void
+        {
+            $this->driver = $driver;
+        }
+
+        public function getCache(): void
+        {
+        }
+
+        public function getConnection(): Connection
+        {
+            return new class([], $this->driver) extends Connection {
+            };
+        }
+
+        public function getExpressionBuilder(): void
+        {
+        }
+
+        public function beginTransaction(): void
+        {
+        }
+
+        public function transactional($func): void
+        {
+        }
+
+        public function commit(): void
+        {
+        }
+
+        public function rollback(): void
+        {
+        }
+
+        public function createQuery($dql = ''): void
+        {
+        }
+
+        public function createNamedQuery($name): void
+        {
+        }
+
+        public function createNativeQuery($sql, ResultSetMapping $rsm): void
+        {
+        }
+
+        public function createNamedNativeQuery($name): void
+        {
+        }
+
+        public function createQueryBuilder(): void
+        {
+        }
+
+        public function getReference($entityName, $id): void
+        {
+        }
+
+        public function getPartialReference($entityName, $identifier): void
+        {
+        }
+
+        public function close(): void
+        {
+        }
+
+        public function copy($entity, $deep = false): void
+        {
+        }
+
+        public function lock($entity, $lockMode, $lockVersion = null): void
+        {
+        }
+
+        public function getEventManager(): void
+        {
+        }
+
+        public function getConfiguration(): void
+        {
+        }
+
+        public function isOpen(): void
+        {
+        }
+
+        public function getUnitOfWork(): void
+        {
+        }
+
+        public function getHydrator($hydrationMode): void
+        {
+        }
+
+        public function newHydrator($hydrationMode): void
+        {
+        }
+
+        public function getProxyFactory(): void
+        {
+        }
+
+        public function getFilters(): void
+        {
+        }
+
+        public function isFiltersStateClean(): void
+        {
+        }
+
+        public function hasFilters(): void
+        {
+        }
     }
-
-    public function getCache(): void
+} else {
+    class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
     {
-    }
+        /** @var Driver */
+        private $driver;
 
-    public function getConnection(): Connection
-    {
-        return new class([], $this->driver) extends Connection {};
-    }
+        public function setDriver(Driver $driver): void
+        {
+            $this->driver = $driver;
+        }
 
-    public function getExpressionBuilder(): void
-    {
-    }
+        public function getCache(): ?Cache
+        {
+        }
 
-    public function beginTransaction(): void
-    {
-    }
+        public function getConnection(): Connection
+        {
+            return new class([], $this->driver) extends Connection {
+            };
+        }
 
-    public function transactional($func): void
-    {
-    }
+        public function getExpressionBuilder(): Query\Expr
+        {
+        }
 
-    public function commit(): void
-    {
-    }
+        public function beginTransaction(): void
+        {
+        }
 
-    public function rollback(): void
-    {
-    }
+        public function transactional($func): void
+        {
+        }
 
-    public function createQuery($dql = ''): void
-    {
-    }
+        public function commit(): void
+        {
+        }
 
-    public function createNamedQuery($name): void
-    {
-    }
+        public function rollback(): void
+        {
+        }
 
-    public function createNativeQuery($sql, ResultSetMapping $rsm): void
-    {
-    }
+        public function createQuery($dql = ''): Query
+        {
+        }
 
-    public function createNamedNativeQuery($name): void
-    {
-    }
+        public function createNamedQuery($name): void
+        {
+        }
 
-    public function createQueryBuilder(): void
-    {
-    }
+        public function createNativeQuery($sql, ResultSetMapping $rsm): NativeQuery
+        {
+        }
 
-    public function getReference($entityName, $id): void
-    {
-    }
+        public function createNamedNativeQuery($name): void
+        {
+        }
 
-    public function getPartialReference($entityName, $identifier): void
-    {
-    }
+        public function createQueryBuilder(): QueryBuilder
+        {
+        }
 
-    public function close(): void
-    {
-    }
+        public function getReference($entityName, $id): ?object
+        {
+        }
 
-    public function copy($entity, $deep = false): void
-    {
-    }
+        public function getPartialReference($entityName, $identifier): void
+        {
+        }
 
-    public function lock($entity, $lockMode, $lockVersion = null): void
-    {
-    }
+        public function close(): void
+        {
+        }
 
-    public function getEventManager(): void
-    {
-    }
+        public function copy($entity, $deep = false): void
+        {
+        }
 
-    public function getConfiguration(): void
-    {
-    }
+        public function lock($entity, $lockMode, $lockVersion = null): void
+        {
+        }
 
-    public function isOpen(): void
-    {
-    }
+        public function getEventManager(): EventManager
+        {
+        }
 
-    public function getUnitOfWork(): void
-    {
-    }
+        public function getConfiguration(): Configuration
+        {
+        }
 
-    public function getHydrator($hydrationMode): void
-    {
-    }
+        public function isOpen(): bool
+        {
+        }
 
-    public function newHydrator($hydrationMode): void
-    {
-    }
+        public function getUnitOfWork(): UnitOfWork
+        {
+        }
 
-    public function getProxyFactory(): void
-    {
-    }
+        public function getHydrator($hydrationMode): void
+        {
+        }
 
-    public function getFilters(): void
-    {
-    }
+        public function newHydrator($hydrationMode): AbstractHydrator
+        {
+        }
 
-    public function isFiltersStateClean(): void
-    {
-    }
+        public function getProxyFactory(): ProxyFactory
+        {
+        }
 
-    public function hasFilters(): void
-    {
+        public function getFilters(): FilterCollection
+        {
+        }
+
+        public function isFiltersStateClean(): bool
+        {
+        }
+
+        public function hasFilters(): bool
+        {
+        }
+
+        public function getRepository($className): EntityRepository
+        {
+        }
+
+        public function wrapInTransaction(callable $func): mixed
+        {
+            // TODO: Implement wrapInTransaction() method.
+        }
     }
 }

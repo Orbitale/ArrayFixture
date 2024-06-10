@@ -146,7 +146,7 @@ class ArrayFixtureTest extends TestCase
 
     private function getObjectManager(): ObjectManagerStub
     {
-        $metadata = $this->createMock(ClassMetadataInterface::class);
+        $metadata = $this->createMock(ORMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
         return new ObjectManagerStub($metadata);
