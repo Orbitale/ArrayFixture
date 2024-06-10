@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 
-if (PHP_VERSION_ID < 80300) {
+if (PHP_VERSION_ID < 80100) {
     class ObjectManagerStub implements ObjectManager
     {
         /** @var ClassMetadata */

@@ -29,7 +29,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
 
-if (PHP_VERSION_ID < 80300) {
+if (PHP_VERSION_ID < 80100) {
     class EntityManagerStub extends ObjectManagerStub implements EntityManagerInterface
     {
         /** @var Driver */
