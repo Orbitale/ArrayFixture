@@ -1,3 +1,9 @@
+# v1.3.5
+
+* Ensure PHP 8.3 compatibility
+* Add doctrine/orm 3.0 compatibility
+* Test over doctrine orm 2 and 3
+
 # v1.3.4
 
 * Allow using doctrine/instantiator ^2.0
