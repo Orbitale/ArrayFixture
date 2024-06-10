@@ -8,14 +8,19 @@ jobs:
 
         strategy:
             matrix:
-                php-version:
-                    - '7.3'
-                    - '7.4'
-                    - '8.0'
-                    - '8.1'
-                    - '8.2'
+                include:
+                    - { php-version: '7.3', orm-version: '2.7' }
+                    - { php-version: '7.4', orm-version: '2.7' }
+                    - { php-version: '8.0', orm-version: '2.7' }
+                    - { php-version: '8.1', orm-version: '2.7' }
+                    - { php-version: '8.2', orm-version: '2.7' }
+                    - { php-version: '8.3', orm-version: '2.7' }
 
-        name: PHP ${{ matrix.php-version }}
+                    - { php-version: '8.1', orm-version: '3.0' }
+                    - { php-version: '8.2', orm-version: '3.0' }
+                    - { php-version: '8.3', orm-version: '3.0' }
+
+        name: PHP ${{ matrix.php-version }} / ORM ${{ matrix.orm-version }}
         steps:
             - uses: actions/checkout@v2
 
@@ -34,6 +39,8 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
+
+            - run: composer require --dev "doctrine/orm:^${{ matrix.orm-version }}" --no-update
 
             - run: composer install
 
