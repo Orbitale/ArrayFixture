@@ -1,3 +1,9 @@
+# v1.3.6
+
+* Ensure PHP 8.4 compatibility
+* Add doctrine/persistence 4.0 compatibility
+* Add doctrine/data-fixtures 2.0 compatibility
+
 # v1.3.5
 
 * Ensure PHP 8.3 compatibility
