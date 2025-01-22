@@ -13,12 +13,6 @@ declare(strict_types=1);
 
 namespace Tests\Orbitale\Component\ArrayFixture\Stubs;
 
-use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
-
 if (PHP_VERSION_ID < 80100) {
     require_once __DIR__.'/ObjectManagerStub_php80.php';
 } else {

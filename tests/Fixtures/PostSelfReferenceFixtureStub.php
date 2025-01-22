@@ -46,7 +46,7 @@ class PostSelfReferenceFixtureStub extends ArrayFixture
         yield [
             'title' => 'Second title',
             'parent' => function (PostStub $o, self $fixture) {
-                return $fixture->getReference('posts-Default title');
+                return $fixture->getReference('posts-Default title', PostStub::class);
             },
         ];
     }
