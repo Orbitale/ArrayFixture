@@ -30,7 +30,7 @@ jobs:
                     - { php-version: '8.2', orm-version: '3.0', fixtures-version: '2.0' }
                     - { php-version: '8.4', orm-version: '3.0', fixtures-version: '2.0' }
 
-        name: PHP ${{ matrix.php-version }} / ORM ${{ matrix.orm-version }}
+        name: PHP ${{ matrix.php-version }} / ORM ${{ matrix.orm-version }} / Fixtures ${{ matrix.fixtures-version }}
         steps:
             - uses: actions/checkout@v2
 

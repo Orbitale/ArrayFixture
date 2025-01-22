@@ -64,11 +64,11 @@ class ObjectManagerStub implements ObjectManager
     {
     }
 
-    public function remove(object $object)
+    public function remove(object $object): void
     {
     }
 
-    public function clear()
+    public function clear(): void
     {
     }
 
