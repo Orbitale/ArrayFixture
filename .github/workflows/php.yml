@@ -9,26 +9,27 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - { php-version: '7.3', orm-version: '2.7', fixtures-version: '1.4' }
-                    - { php-version: '7.4', orm-version: '2.7', fixtures-version: '1.4' }
-                    - { php-version: '8.0', orm-version: '2.7', fixtures-version: '1.4' }
                     - { php-version: '8.1', orm-version: '2.7', fixtures-version: '1.4' }
                     - { php-version: '8.2', orm-version: '2.7', fixtures-version: '1.4' }
                     - { php-version: '8.3', orm-version: '2.7', fixtures-version: '1.4' }
                     - { php-version: '8.4', orm-version: '2.7', fixtures-version: '1.4' }
+                    - { php-version: '8.5', orm-version: '2.7', fixtures-version: '1.4' }
 
                     - { php-version: '8.1', orm-version: '3.0', fixtures-version: '1.4' }
                     - { php-version: '8.2', orm-version: '3.0', fixtures-version: '1.4' }
                     - { php-version: '8.4', orm-version: '3.0', fixtures-version: '1.4' }
+                    - { php-version: '8.5', orm-version: '3.0', fixtures-version: '1.4' }
 
                     - { php-version: '8.1', orm-version: '2.7', fixtures-version: '2.0' }
                     - { php-version: '8.2', orm-version: '2.7', fixtures-version: '2.0' }
                     - { php-version: '8.3', orm-version: '2.7', fixtures-version: '2.0' }
                     - { php-version: '8.4', orm-version: '2.7', fixtures-version: '2.0' }
+                    - { php-version: '8.5', orm-version: '2.7', fixtures-version: '2.0' }
 
                     - { php-version: '8.1', orm-version: '3.0', fixtures-version: '2.0' }
                     - { php-version: '8.2', orm-version: '3.0', fixtures-version: '2.0' }
                     - { php-version: '8.4', orm-version: '3.0', fixtures-version: '2.0' }
+                    - { php-version: '8.5', orm-version: '3.0', fixtures-version: '2.0' }
 
         name: PHP ${{ matrix.php-version }} / ORM ${{ matrix.orm-version }} / Fixtures ${{ matrix.fixtures-version }}
         steps:

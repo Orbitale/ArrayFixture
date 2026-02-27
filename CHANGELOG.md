@@ -1,3 +1,9 @@
+# v1.4.0
+
+* Drop support for PHP <8.1
+* Ensure PHP 8.5 compatibility
+* Upgrade test suite to PHPUnit 10 and update tests to be compatible
+
 # v1.3.6
 
 * Ensure PHP 8.4 compatibility

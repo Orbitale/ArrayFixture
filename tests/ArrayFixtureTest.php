@@ -18,8 +18,11 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata as ODMClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
-use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
+use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
+use PHPUnit\Framework\Constraint\Callback;
+use PHPUnit\Framework\Constraint\IsInstanceOf;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\CustomNumberOfFlushesFixtureStub;
@@ -29,9 +32,6 @@ use Tests\Orbitale\Component\ArrayFixture\Fixtures\ObjectsWithIdsStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\PostSelfReferenceFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\PostTitleFixtureStub;
 use Tests\Orbitale\Component\ArrayFixture\Fixtures\ToStringPrefixFixtureStub;
-use Tests\Orbitale\Component\ArrayFixture\Stubs\DocumentManagerStub;
-use Tests\Orbitale\Component\ArrayFixture\Stubs\EntityManagerStub;
-use Tests\Orbitale\Component\ArrayFixture\Stubs\ObjectManagerStub;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\PostStub;
 use Tests\Orbitale\Component\ArrayFixture\Stubs\ReferenceRepositoryStub;
 
@@ -41,34 +41,51 @@ class ArrayFixtureTest extends TestCase
     {
         $manager = $this->getObjectManager();
 
+        $manager->expects($this->once())->method('flush');
+        $manager->expects($this->once())->method('persist')->with(
+            new Callback(function ($stub) {
+                return is_object($stub) && $stub instanceof PostStub && $stub->getTitle() === 'Default title';
+            }),
+        );
+
+        //
+
         (new PostTitleFixtureStub())->load($manager);
-
-        self::assertSame(1, $manager->getFlushed());
-
-        $entities = $manager->getPersisted();
-        self::assertCount(1, $entities);
-        self::assertInstanceOf(PostStub::class, $entities[0]);
-        self::assertSame('Default title', $entities[0]->getTitle());
     }
 
     public function test post self reference fixture(): void
     {
         $manager = $this->getObjectManager();
-        $refs = new ReferenceRepositoryStub($manager);
+
+        $titles = [
+            'Default title',
+            'Second title',
+        ];
+        /** @var null|PostStub $lastStub */
+        $lastStub = null;
+
+        $manager->expects($this->once())->method('flush');
+        $manager->expects($this->exactly(2))->method('persist')->with(
+            new Callback(function ($stub) use (&$titles, &$lastStub) {
+                if (!count($titles)) {
+                    self::fail('Persist was called too many times');
+                }
+                $title = array_shift($titles);
+                $result = is_object($stub)
+                    && $stub instanceof PostStub
+                    && $stub->getTitle() === $title
+                    && ($lastStub ? $stub->getParent() === $lastStub : true)
+                ;
+                $lastStub = $stub;
+                return $result;
+            }),
+        );
+
+        //
 
         $fixture = new PostSelfReferenceFixtureStub();
-        $fixture->setReferenceRepository($refs);
+        $fixture->setReferenceRepository(new ReferenceRepositoryStub($manager));
         $fixture->load($manager);
-
-        self::assertSame(1, $manager->getFlushed());
-
-        $entities = $manager->getPersisted();
-        self::assertCount(2, $entities);
-        self::assertInstanceOf(PostStub::class, $entities[0]);
-        self::assertInstanceOf(PostStub::class, $entities[1]);
-        self::assertSame('Default title', $entities[0]->getTitle());
-        self::assertSame('Second title', $entities[1]->getTitle());
-        self::assertSame($entities[0], $entities[1]->getParent());
     }
 
     public function test inexistent property(): void
@@ -78,6 +95,8 @@ class ArrayFixtureTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Cannot set property "does_not_exist" to "Tests\Orbitale\Component\ArrayFixture\Stubs\PostStub" object since this property does not exist.');
 
+        //
+
         (new InexistentPropertyFixtureStub())->load($manager);
     }
 
@@ -86,19 +105,31 @@ class ArrayFixtureTest extends TestCase
         $manager = $this->getObjectManager();
         $refsRepo = new ReferenceRepositoryStub($manager);
 
+        /** @var PostStub $persistedStub */
+        $persistedStub = null;
+
+        $manager->expects($this->once())->method('flush');
+        $manager->expects($this->once())->method('persist')->with(
+            new Callback(function ($stub) use (&$persistedStub) {
+                $result = is_object($stub) && $stub instanceof PostStub && $stub->getTitle() === 'Default title';
+                if ($result) {
+                    $persistedStub = $stub;
+                }
+                return $result;
+            }),
+        );
+
+        //
+
         $fixture = new ToStringPrefixFixtureStub();
         $fixture->setReferenceRepository($refsRepo);
         $fixture->load($manager);
 
-        self::assertSame(1, $manager->getFlushed());
+        //
 
-        $entities = $manager->getPersisted();
-        self::assertCount(1, $entities);
-        self::assertInstanceOf(PostStub::class, $entities[0]);
-        self::assertSame('Default title', $entities[0]->getTitle());
         $refs = $refsRepo->getReferences();
         self::assertArrayHasKey('post-Default title', $refs);
-        self::assertSame($refs['post-Default title'], $entities[0]);
+        self::assertSame($refs['post-Default title'], $persistedStub);
     }
 
     public function test inexistent prefix method(): void
@@ -108,6 +139,8 @@ class ArrayFixtureTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('If you want to specify a reference with prefix "post-", method "getInexistentField" or "__toString()" must exist in the class, or you can override the "getMethodNameForReference" method and add your own.');
 
+        //
+
         (new InexistentMethodPrefixFixtureStub())->load($manager);
     }
 
@@ -115,61 +148,126 @@ class ArrayFixtureTest extends TestCase
     {
         $manager = $this->getObjectManager();
 
-        $fixture = new CustomNumberOfFlushesFixtureStub();
-        $fixture->load($manager);
+        $manager->expects($this->exactly(5))->method('flush');
+        $manager->expects($this->exactly(20))->method('persist');
 
-        self::assertSame(5, $manager->getFlushed());
-        self::assertCount(20, $manager->getPersisted());
+        //
+
+        $manager->expects($this->exactly(5))->method('flush');
+        $manager->expects($this->exactly(20))->method('persist')->with(
+            new Callback(function ($stub) use (&$persistedStubs) {
+                $result = is_object($stub) && $stub instanceof PostStub;
+                if ($result) {
+                    $persistedStubs[] = $stub;
+                }
+                return $result;
+            }),
+        );
+
+        //
+
+        (new CustomNumberOfFlushesFixtureStub())->load($manager);
+        self::assertCount(20, $persistedStubs);
+        for ($i = 0; $i < 20; $i++) {
+            self::assertSame('Title'.$i, $persistedStubs[$i]->getTitle());
+            self::assertNull($persistedStubs[$i]->getParent());
+        }
     }
 
     public function test entities with ids(): void
     {
         $entityManager = $this->getEntityManager();
 
-        $fixture = new ObjectsWithIdsStub();
-        $fixture->load($entityManager);
+        /** @var PostStub[] $persistedStubs */
+        $persistedStubs = [];
 
-        self::assertSame(1, $entityManager->getFlushed());
-        self::assertCount(2, $entityManager->getPersisted());
+        $entityManager->expects($this->once())->method('flush')->withAnyParameters();
+        $entityManager->expects($this->exactly(2))->method('persist')->with(
+            new Callback(function ($stub) use (&$persistedStubs) {
+                $result = is_object($stub) && $stub instanceof PostStub;
+                if ($result) {
+                    $persistedStubs[] = $stub;
+                }
+                return $result;
+            }),
+        );
+
+        //
+
+        (new ObjectsWithIdsStub())->load($entityManager);
+        self::assertSame('Default title', $persistedStubs[0]->getTitle());
+        self::assertNull($persistedStubs[0]->getParent());
+        self::assertSame('Another title', $persistedStubs[1]->getTitle());
+        self::assertNull($persistedStubs[1]->getParent());
     }
 
     public function test documents with ids(): void
     {
         $documentManager = $this->getDocumentManager();
 
-        $fixture = new ObjectsWithIdsStub();
-        $fixture->load($documentManager);
+        /** @var PostStub[] $persistedStubs */
+        $persistedStubs = [];
 
-        self::assertSame(1, $documentManager->getFlushed());
-        self::assertCount(2, $documentManager->getPersisted());
+        $documentManager->expects($this->once())->method('flush')->withAnyParameters();
+        $documentManager->expects($this->exactly(2))->method('persist')->with(
+            new Callback(function ($stub) use (&$persistedStubs) {
+                $result = is_object($stub) && $stub instanceof PostStub;
+                if ($result) {
+                    $persistedStubs[] = $stub;
+                }
+                return $result;
+            }),
+        );
+
+
+        //
+
+        (new ObjectsWithIdsStub())->load($documentManager);
+        self::assertSame('Default title', $persistedStubs[0]->getTitle());
+        self::assertNull($persistedStubs[0]->getParent());
+        self::assertSame('Another title', $persistedStubs[1]->getTitle());
+        self::assertNull($persistedStubs[1]->getParent());
     }
 
-    private function getObjectManager(): ObjectManagerStub
+    /**
+     * @return ObjectManager&MockObject
+     */
+    private function getObjectManager(): ObjectManager
     {
         $metadata = $this->createMock(ORMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
-        return new ObjectManagerStub($metadata);
+        $om = $this->createMock(ObjectManager::class);
+        $om->method('getClassMetadata')->willReturn($metadata);
+
+        return $om;
     }
 
+    /**
+     * @return EntityManagerInterface&MockObject
+     */
     private function getEntityManager(): EntityManagerInterface
     {
         $metadata = $this->createMock(ORMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
-        $driver = $this->createMock(Driver::class);
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->method('getClassMetadata')->willReturn($metadata);
 
-        $stub = new EntityManagerStub($metadata);
-        $stub->setDriver($driver);
-
-        return $stub;
+        return $em;
     }
 
+    /**
+     * @return DocumentManager&MockObject
+     */
     private function getDocumentManager(): DocumentManager
     {
         $metadata = $this->createMock(ODMClassMetadata::class);
         $metadata->method('getIdentifierFieldNames')->willReturn(['id']); // Default to "id" since composite are not supported yet.
 
-        return new DocumentManagerStub($metadata);
+        $dm = $this->createStub(DocumentManager::class);
+        $dm->method('getClassMetadata')->willReturn($metadata);
+
+        return $dm;
     }
 }
