@@ -37,7 +37,7 @@ use Tests\Orbitale\Component\ArrayFixture\Stubs\ReferenceRepositoryStub;
 
 class ArrayFixtureTest extends TestCase
 {
-    public function test post title fixture(): void
+    public function test_post_title_fixture(): void
     {
         $manager = $this->getObjectManager();
 
@@ -53,7 +53,7 @@ class ArrayFixtureTest extends TestCase
         (new PostTitleFixtureStub())->load($manager);
     }
 
-    public function test post self reference fixture(): void
+    public function test_post_self_reference_fixture(): void
     {
         $manager = $this->getObjectManager();
 
@@ -88,7 +88,7 @@ class ArrayFixtureTest extends TestCase
         $fixture->load($manager);
     }
 
-    public function test inexistent property(): void
+    public function test_inexistent_property(): void
     {
         $manager = $this->getObjectManager();
 
@@ -100,7 +100,7 @@ class ArrayFixtureTest extends TestCase
         (new InexistentPropertyFixtureStub())->load($manager);
     }
 
-    public function test toString for prefix(): void
+    public function test_toString_for_prefix(): void
     {
         $manager = $this->getObjectManager();
         $refsRepo = new ReferenceRepositoryStub($manager);
@@ -132,7 +132,7 @@ class ArrayFixtureTest extends TestCase
         self::assertSame($refs['post-Default title'], $persistedStub);
     }
 
-    public function test inexistent prefix method(): void
+    public function test_inexistent_prefix_method(): void
     {
         $manager = $this->getObjectManager();
 
@@ -144,7 +144,7 @@ class ArrayFixtureTest extends TestCase
         (new InexistentMethodPrefixFixtureStub())->load($manager);
     }
 
-    public function test custom number of flushes(): void
+    public function test_custom_number_of_flushes(): void
     {
         $manager = $this->getObjectManager();
 
@@ -174,7 +174,7 @@ class ArrayFixtureTest extends TestCase
         }
     }
 
-    public function test entities with ids(): void
+    public function test_entities_with_ids(): void
     {
         $entityManager = $this->getEntityManager();
 
@@ -201,7 +201,7 @@ class ArrayFixtureTest extends TestCase
         self::assertNull($persistedStubs[1]->getParent());
     }
 
-    public function test documents with ids(): void
+    public function test_documents_with_ids(): void
     {
         $documentManager = $this->getDocumentManager();
 

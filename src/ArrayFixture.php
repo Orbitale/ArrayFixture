@@ -87,6 +87,8 @@ abstract class ArrayFixture extends BaseAbstractFixture
             $dbConfiguration->setSQLLogger(null);
         }
 
+        $this->beforeCreatingObjects();
+
         $objects = $this->getObjects();
 
         $this->numberOfIteratedObjects = 0;
@@ -189,6 +191,14 @@ abstract class ArrayFixture extends BaseAbstractFixture
     protected function clearEntityManagerOnFlush(): bool
     {
         return true;
+    }
+
+    /**
+     * Will be called just before "->getObjects()".
+     * This allows side-actions, like fetching data from an external source, using injected services, etc.
+     */
+    protected function beforeCreatingObjects(): void
+    {
     }
 
     /**
